@@ -326,10 +326,12 @@ TEST(STDIO_TEST, snprintf_S) { // Synonym for %ls.
 
 TEST(STDIO_TEST, snprintf_n) {
 #if defined(__BIONIC__)
-  // http://b/14492135 and http://b/31832608.
+  // http://b/14492135
   char buf[32];
   int i = 1234;
-  EXPECT_DEATH(snprintf(buf, sizeof(buf), "a %n b", &i), "%n not allowed on Android");
+  EXPECT_EQ(5, snprintf(buf, sizeof(buf), "a %n b", &i));
+  EXPECT_EQ(1234, i);
+  EXPECT_STREQ("a n b", buf);
 #else
   GTEST_SKIP() << "glibc does allow %n";
 #endif

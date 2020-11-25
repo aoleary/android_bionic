@@ -434,8 +434,26 @@ int FUNCTION_NAME(FILE* fp, const CHAR_TYPE* fmt0, va_list ap) {
           lead = expt;
         }
         break;
+#ifndef NO_PRINTF_PERCENT_N
       case 'n':
-        __fortify_fatal("%%n not allowed on Android");
+        if (flags & LLONGINT)
+          *GETARG(long long*) = ret;
+        else if (flags & LONGINT)
+          *GETARG(long*) = ret;
+        else if (flags & SHORTINT)
+          *GETARG(short*) = ret;
+        else if (flags & CHARINT)
+          *GETARG(signed char*) = ret;
+        else if (flags & PTRINT)
+          *GETARG(ptrdiff_t*) = ret;
+        else if (flags & SIZEINT)
+          *GETARG(ssize_t*) = ret;
+        else if (flags & MAXINT)
+          *GETARG(intmax_t*) = ret;
+        else
+          *GETARG(int*) = ret;
+        continue; /* no output */
+#endif            /* NO_PRINTF_PERCENT_N */
       case 'O':
         flags |= LONGINT;
         __BIONIC_FALLTHROUGH;
